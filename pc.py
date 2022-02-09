@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 ##########################################
-# Duino-Coin Python PC Miner (v2.5.6)
-# https://github.com/revoxhere/duino-coin
+# Bitcoin Python PC Miner (v2.5.6)
+# https://github.com/revoxhere/bitcoin
 # Distributed under MIT license
-# © Duino-Coin Community 2019-2021
+# © Bitcoin Community 2019-2021
 ##########################################
 # Import libraries
 import sys
@@ -113,7 +113,7 @@ except ModuleNotFoundError:
 
 # Global variables
 MINER_VER = "2.56"  # Version number
-NODE_ADDRESS = "server.duinocoin.com"
+NODE_ADDRESS = "server.bitcoin.com"
 AVAILABLE_PORTS = [
     2813,  # PC (1)
     2814,  # PC (2)
@@ -129,7 +129,7 @@ debug = "n"
 discord_presence = "y"
 rig_identiier = "None"
 requested_diff = "NET"
-algorithm = "DUCO-S1"
+algorithm = "SHA256"
 config = ConfigParser()
 donation_level = 0
 thread = []
@@ -144,7 +144,7 @@ if not path.exists(RESOURCES_DIR):
 if not Path(RESOURCES_DIR + "/langs.json").is_file():
     url = ("https://raw.githubusercontent.com/"
            + "revoxhere/"
-           + "duino-coin/master/Resources/"
+           + "bitcoin/master/Resources/"
            + "PC_Miner_langs.json")
     r = requests.get(url)
     with open(RESOURCES_DIR + "/langs.json", "wb") as f:
@@ -191,7 +191,7 @@ try:
         # Read language variable from configfile
         try:
             config.read(RESOURCES_DIR + "/Miner_config.cfg")
-            lang = config["Duino-Coin-PC-Miner"]["language"]
+            lang = config["Bitcoin-PC-Miner"]["language"]
         except Exception:
             # If it fails, fallback to english
             lang = "english"
@@ -321,7 +321,7 @@ def Greeting():
         + " ‖ "
         + Style.NORMAL
         + Fore.YELLOW
-        + "https://github.com/revoxhere/duino-coin")
+        + "https://github.com/revoxhere/bitcoin")
 
     if lang != "english":
         print(
@@ -441,7 +441,7 @@ def loadConfig():
                 + Fore.RESET
                 + "1"
                 + Style.NORMAL
-                + " - DUCO-S1 ("
+                + " - SHA256 ("
                 + getString("recommended")
                 + ")")
             print(
@@ -501,7 +501,7 @@ def loadConfig():
         if algorithm == "2":
             algorithm = "XXHASH"
         else:
-            algorithm = "DUCO-S1"
+            algorithm = "SHA256"
 
         # Check wheter diff setting is correct
         if requested_diff == "1":
@@ -542,18 +542,18 @@ def loadConfig():
     else:
         # If config already exists, load data from it
         config.read(RESOURCES_DIR + "/Miner_config.cfg")
-        username = config["Duino-Coin-PC-Miner"]["username"]
-        efficiency = config["Duino-Coin-PC-Miner"]["efficiency"]
-        threadcount = config["Duino-Coin-PC-Miner"]["threads"]
-        requested_diff = config["Duino-Coin-PC-Miner"]["requested_diff"]
-        donation_level = config["Duino-Coin-PC-Miner"]["donate"]
-        algorithm = config["Duino-Coin-PC-Miner"]["algorithm"]
-        rig_identiier = config["Duino-Coin-PC-Miner"]["identifier"]
-        debug = config["Duino-Coin-PC-Miner"]["debug"]
-        SOC_TIMEOUT = int(config["Duino-Coin-PC-Miner"]["soc_timeout"])
-        discord_presence = config["Duino-Coin-PC-Miner"]["discord_presence"]
+        username = config["Bitcoin-PC-Miner"]["username"]
+        efficiency = config["Bitcoin-PC-Miner"]["efficiency"]
+        threadcount = config["Bitcoin-PC-Miner"]["threads"]
+        requested_diff = config["Bitcoin-PC-Miner"]["requested_diff"]
+        donation_level = config["Bitcoin-PC-Miner"]["donate"]
+        algorithm = config["Bitcoin-PC-Miner"]["algorithm"]
+        rig_identiier = config["Bitcoin-PC-Miner"]["identifier"]
+        debug = config["Bitcoin-PC-Miner"]["debug"]
+        SOC_TIMEOUT = int(config["Bitcoin-PC-Miner"]["soc_timeout"])
+        discord_presence = config["Bitcoin-PC-Miner"]["discord_presence"]
         PERIODIC_REPORT_TIME = int(
-            config["Duino-Coin-PC-Miner"]["periodic_report"])
+            config["Bitcoin-PC-Miner"]["periodic_report"])
 
     efficiency = (100 - float(efficiency)) * 0.01
 
@@ -563,8 +563,9 @@ def ducos1(
         expectedHash,
         difficulty,
         efficiency):
-    # DUCO-S1 algorithm
-    # Measure starting time
+    # SHA256 algorithm
+
+   # Measure starting time
     timeStart = time()
     base_hash = sha1(str(lastBlockHash).encode('ascii'))
     temp_hash = None
@@ -587,7 +588,7 @@ def ducos1(
             return [ducos1res, hashrate]
 
 
-def ducos1xxh(
+def sha256xxh(
         lastBlockHash,
         expectedHash,
         difficulty,
@@ -598,20 +599,20 @@ def ducos1xxh(
     # Loop from 1 too 100*diff
     for ducos1xxres in range(100 * int(difficulty) + 1):
         # If efficiency lower than 100% sleep to use less CPU
-        if ducos1xxres % 1000000 == 0 and float(100 - efficiency * 100) < 100:
+        if sha256xxres % 1000000 == 0 and float(100 - efficiency * 100) < 100:
             sleep(float(efficiency))
         # Generate hash
-        ducos1xx = xxhash.xxh64(
-            str(lastBlockHash) + str(ducos1xxres), seed=2811)
-        ducos1xx = ducos1xx.hexdigest()
+        sha256xx = xxhash.xxh64(
+            str(lastBlockHash) + str(sha256xxres), seed=2811)
+        sha256xx = sha256xx.hexdigest()
         # Check if result was found
         if ducos1xx == expectedHash:
             # Measure finish time
             timeStop = time()
             # Calculate hashrate
             timeDelta = timeStop - timeStart
-            hashrate = ducos1xxres / timeDelta
-            return [ducos1xxres, hashrate]
+            hashrate = sha256xxres / timeDelta
+            return [sha256xxres, hashrate]
 
 
 def Thread(
@@ -1160,13 +1161,13 @@ def updateRichPresence():
                 + str(accepted.value)
                 + "/"
                 + str(rejected.value + accepted.value),
-                large_image="ducol",
-                large_text="Duino-Coin, "
+                large_image="SHA256",
+                large_text="Bitcoin, "
                 + "a coin that can be mined with almost everything, "
                 + "including AVR boards",
                 buttons=[
                     {"label": "Learn more",
-                     "url": "https://duinocoin.com"},
+                     "url": "https://bitcoin.com"},
                     {"label": "Discord Server",
                      "url": "https://discord.gg/k48Ht5y"}])
             debug_output("Rich presence updated")
@@ -1220,7 +1221,7 @@ def fetch_pools():
 
         try:
             response = requests.get(
-                "https://server.duinocoin.com/getPool"
+                "https://server.bitcoin.com/getPool"
             ).json()
 
             pretty_print("net0",
@@ -1321,13 +1322,13 @@ if __name__ == "__main__":
     try:
         NODE_ADDRESS, NODE_PORT = fetch_pools()
     except:
-        NODE_ADDRESS = "server.duinocoin.com"
+        NODE_ADDRESS = "server.bitcoin.com"
         NODE_PORT = 2813
         debug_output("Using default server port and address")
 
     try:
         for x in range(int(threadcount)):
-            # Launch duco mining threads
+            # Launch btc mining threads
             thread.append(x)
             thread[x] = Process(
                 target=Thread,
